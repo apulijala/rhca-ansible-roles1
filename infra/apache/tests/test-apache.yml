@@ -1,0 +1,5 @@
+- name: Install prod role on serverc
+  hosts: servers
+  roles:
+    - ../../../infra/apache/
+

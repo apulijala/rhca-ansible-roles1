@@ -1,0 +1,47 @@
+---
+# tasks file for apache
+- name: Install apache
+  yum: 
+    name: httpd
+    state: latest
+
+- name: Start apache service
+  service: 
+    name: httpd
+    state: started 
+
+- name: Configure prod vhost
+  template: 
+    src: prod.conf.j2
+    dest: "{{ prod_vhost_dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart apache
+
+- name: Open firewall port for httpd.
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: true
+  notify: restart firewalld
+
+- name: Get stats of file
+  ansible.builtin.stat:
+    path: "{{ index_file }}"
+  register: index_stats
+
+- name: Debug stats
+  debug: 
+    msg: " {{ index_stats }}"
+
+- name: deploy index file
+  ansible.builtin.template:
+    src: "index.html.j2"
+    dest: "{{ index_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: index_stats.stat.exists is defined and not index_stats.stat.exists
+  notify: restart apache

@@ -1,0 +1,7 @@
+---
+# vars file for apache
+vhost_dest: "/etc/httpd/conf.d"
+prod_document_root: "/var/www/html"
+prod_vhost_dest: "{{ vhost_dest }}/prod.conf"
+index_dir : "/var/www/html"
+index_file : "{{ index_dir }}/index.html"
